@@ -5,8 +5,8 @@ export class UserRepository {
     throw new Error("Method 'create' not implemented");
   }
 
-  findByUsername(username) {
-    throw new Error("Method 'findByUsername' not implemented");
+  findByEmail(email) {
+    throw new Error("Method 'findByEmail' not implemented");
   }
 
   findById(id) {

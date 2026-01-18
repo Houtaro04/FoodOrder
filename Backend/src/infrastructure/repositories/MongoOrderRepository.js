@@ -7,13 +7,20 @@ export class MongoOrderRepository extends OrderRepository {
     await newOrder.save();
     return newOrder;
   }
-  async findById(id) {
-    return await OrderModel.findById(id);
-  }
-  async updateStatus(id, status) {
-    return await OrderModel.findByIdAndUpdate(id, { status }, { new: true });
-  }
-  async getAll() {
-    return await OrderModel.find({});
-  }
+  // Thêm hàm lấy tất cả đơn (cho Admin)
+    async getAllOrders() {
+        // Logic lấy dữ liệu và populate user
+        return await OrderModel.find()
+            .populate('user', 'fullName email') // Lấy thông tin user
+            .sort({ createdAt: -1 }); // Mới nhất lên đầu
+    }
+
+    // Thêm hàm update status (cho Admin)
+    async updateStatus(orderId, newStatus) {
+        return await OrderModel.findByIdAndUpdate(
+            orderId, 
+            { status: newStatus }, 
+            { new: true } // Trả về data mới sau khi update
+        );
+    }
 }

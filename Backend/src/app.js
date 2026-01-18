@@ -5,6 +5,11 @@ import cors from 'cors';
 // Import các routes (Sau này sẽ bỏ comment khi bạn viết xong routes)
 // import orderRoutes from './presentation/routes/orderRoutes.js';
 import userRoutes from './presentation/routes/userRoutes.js';
+import productRoutes from './presentation/routes/productRoutes.js';
+import orderRoutes from './presentation/routes/orderRoutes.js';
+import isAdmin from './presentation/middlewares/isAdmin.js';
+import { authMiddleware } from './presentation/middlewares/authMiddleware.js';
+import adminRoutes from './presentation/routes/adminRoutes.js';
 
 const app = express();
 
@@ -20,6 +25,17 @@ app.get('/', (req, res) => {
 
 app.use('/api/users', userRoutes);
 
-// app.use('/api/orders', orderRoutes);
+app.use('/api/auth', userRoutes); // Sử dụng routes cho xác thực người dùng
+
+app.use('/api/products', productRoutes); // Sử dụng routes cho sản phẩm
+
+app.use('/api/orders', orderRoutes);
+
+app.use('/api/admin', authMiddleware, isAdmin, adminRoutes);
+
+// --- Lỗi 404 cho các route không tồn tại ---
+app.use((req, res, next) => {
+  res.status(404).json({ error: "Route không tồn tại." });
+});
 
 export default app;

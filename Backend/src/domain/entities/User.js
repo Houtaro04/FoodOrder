@@ -1,10 +1,11 @@
 // src/domain/entities/User.js
 export class User {
-  constructor(id, fullName, username, password, role, phone, address) {
+  constructor(id, fullName, username, password, email, role, phone, address) {
     this.id = id;
     this.fullName = fullName;
     this.username = username;
     this.password = password;
+    this.email = email;
     this.role = role;
     this.phone = phone;
     this.address = address;

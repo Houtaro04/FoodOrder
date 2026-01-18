@@ -13,24 +13,36 @@ export class MongoUserRepository extends UserRepository {
       mongoUser.fullName,
       mongoUser.username,
       mongoUser.password,
+      mongoUser.email,
       mongoUser.role,
       mongoUser.phone,
       mongoUser.address
     );
   }
 
-  async findByUsername(username) {
-    const mongoUser = await UserModel.findOne({ username });
-    // Trả về Entity sạch, không dính dáng gì tới hàm của mongoose
-    return this._toEntity(mongoUser);
+  async findByEmail(email) {
+    const mongoUser = await UserModel.findOne({ email });
+    if (!mongoUser) return null;
+    return new User(
+      mongoUser._id.toString(),
+      mongoUser.fullName,
+      mongoUser.username,
+      mongoUser.password,
+      mongoUser.email,
+      mongoUser.role,
+      mongoUser.phone,
+      mongoUser.address
+    );
   }
 
   async create(userEntity) {
     // Chuyển từ Entity -> Mongoose Model để lưu
     const userModel = new UserModel({
+      id: userEntity.id,
       fullName: userEntity.fullName,
       username: userEntity.username,
       password: userEntity.password,
+      email: userEntity.email,
       role: userEntity.role,
       phone: userEntity.phone,
       address: userEntity.address
@@ -39,4 +51,9 @@ export class MongoUserRepository extends UserRepository {
     await userModel.save();
     return this._toEntity(userModel);
   }
+  async getAllUsers() {
+        // Lấy tất cả user, trừ password ra cho bảo mật
+        // sort({ createdAt: -1 }) để user mới nhất lên đầu
+        return await UserModel.find().select('-password').sort({ createdAt: -1 });
+    }
 }

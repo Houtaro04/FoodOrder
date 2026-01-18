@@ -5,9 +5,9 @@ export class LoginUserUseCase {
     this.userRepository = userRepository;
   }
 
-  async execute(username, password) {
+  async execute(email, password) {
     // 1. Tìm user trong DB
-    const user = await this.userRepository.findByUsername(username);
+    const user = await this.userRepository.findByEmail(email);
     if (!user) {
       throw new Error('Sai tên đăng nhập hoặc mật khẩu');
     }

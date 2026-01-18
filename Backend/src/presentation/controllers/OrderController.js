@@ -1,13 +1,13 @@
-export class OrderController {
-  constructor(createOrderUseCase) {
+export default class OrderController {
+  // 1. Inject cả UseCase (cho user tạo đơn) và Repository (cho admin quản lý)
+  constructor(createOrderUseCase, orderRepository) {
     this.createOrderUseCase = createOrderUseCase;
+    this.orderRepository = orderRepository;
   }
 
-  // SỬA 1: Dùng Arrow Function để giữ ngữ cảnh 'this'
+  // --- 1. TẠO ĐƠN HÀNG (User) ---
   create = async (req, res) => {
     try {
-      // SỬA 2: Kiểm tra an toàn (Safety check)
-      // Đảm bảo middleware auth đã chạy và user đã đăng nhập
       if (!req.user || !req.user.id) {
         return res.status(401).json({ error: "Unauthorized: User not found" });
       }
@@ -15,13 +15,10 @@ export class OrderController {
       const customerId = req.user.id;
       const orderData = req.body;
 
-      // SỬA 3: Validate cơ bản ở tầng Controller
-      // (Ví dụ: Giỏ hàng không được rỗng)
       if (!orderData.items || orderData.items.length === 0) {
         return res.status(400).json({ error: "Giỏ hàng không được để trống" });
       }
 
-      // Gọi Use Case
       const createdOrder = await this.createOrderUseCase.execute(customerId, orderData);
       
       return res.status(201).json({ 
@@ -30,12 +27,38 @@ export class OrderController {
       });
 
     } catch (error) {
-      // SỬA 4: Log lỗi ra terminal để dev xem
       console.error("Error creating order:", error);
-
-      // Trả về lỗi cho client
-      // Nếu lỗi từ UseCase (ví dụ: hết hàng), trả về 400. Lỗi hệ thống trả về 500.
       return res.status(400).json({ error: error.message });
     }
+  }
+
+  // --- 2. LẤY TẤT CẢ ĐƠN (Admin) ---
+  getAllOrders = async (req, res) => {
+      try {
+          // KHÔNG dùng require ở đây. Dùng Repository đã inject.
+          const orders = await this.orderRepository.getAllOrders();
+          res.status(200).json(orders);
+      } catch (error) {
+          res.status(500).json({ error: error.message });
+      }
+  }
+
+  // --- 3. CẬP NHẬT TRẠNG THÁI (Admin) ---
+  updateOrderStatus = async (req, res) => {
+      try {
+          const { id } = req.params;
+          const { status } = req.body; 
+
+          // Gọi Repository để update
+          const updatedOrder = await this.orderRepository.updateStatus(id, status);
+          
+          if (!updatedOrder) {
+            return res.status(404).json({ error: "Không tìm thấy đơn hàng" });
+          }
+
+          res.status(200).json(updatedOrder);
+      } catch (error) {
+          res.status(500).json({ error: error.message });
+      }
   }
 }

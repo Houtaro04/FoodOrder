@@ -6,10 +6,10 @@ export class RegisterUserUseCase {
   }
 
   async execute(userData) {
-    // 1. Kiểm tra xem username đã tồn tại chưa
-    const existingUser = await this.userRepository.findByUsername(userData.username);
+    // 1. Kiểm tra xem email đã tồn tại chưa
+    const existingUser = await this.userRepository.findByEmail(userData.email);
     if (existingUser) {
-      throw new Error('Tên đăng nhập đã tồn tại');
+      throw new Error('Email đã tồn tại');
     }
 
     // 2. Mã hóa password (Hashing)

@@ -15,6 +15,11 @@ const UserSchema = new mongoose.Schema({
     required: true 
     // LƯU Ý: Ở đây sẽ lưu chuỗi mã hóa (Hash), KHÔNG lưu password thô
   },
+  email: { 
+    type: String, 
+    required: true, 
+    unique: true 
+  },
   role: { 
     type: String, 
     enum: ['customer', 'admin'], // Chỉ chấp nhận 2 giá trị này
@@ -22,7 +27,6 @@ const UserSchema = new mongoose.Schema({
   },
   phone: { 
     type: String,
-    required: true
   },
   address: { 
     type: String,

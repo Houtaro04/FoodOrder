@@ -3,7 +3,7 @@ import express from 'express';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 
 // 2. Import các lớp cần thiết (Controller, UseCase, Repository)
-import { OrderController } from '../controllers/OrderController.js';
+import OrderController from '../controllers/OrderController.js';
 import { CreateOrderUseCase } from '../../application/order/CreateOrder.usecase.js';
 import { MongoOrderRepository } from '../../infrastructure/repositories/MongoOrderRepository.js';
 import { MongoProductRepository } from '../../infrastructure/repositories/MongoProductRepository.js';
@@ -20,7 +20,7 @@ const productRepository = new MongoProductRepository(); // Cần cái này để
 const createOrderUseCase = new CreateOrderUseCase(orderRepository, productRepository);
 
 // Bước 3: Chuẩn bị Controller (Bơm Use Case vào)
-const orderController = new OrderController(createOrderUseCase);
+const orderController = new OrderController(createOrderUseCase, orderRepository);
 
 // --- 4. Định nghĩa Route ---
 // Giải thích: 

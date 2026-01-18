@@ -19,7 +19,7 @@ const HomePage = () => {
 
   return (
     <div style={{ padding: '20px' }}>
-      <h2>🍽️ Menu Hôm Nay</h2>
+      <h2>🍽️ Menu</h2>
       <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
         {products.map((product) => (
           <ProductCard key={product.id} product={product} />

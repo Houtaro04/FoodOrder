@@ -1,0 +1,88 @@
+.admin-container { display: flex; min-height: 100vh; }
+.sidebar { width: 250px; background: #333; color: white; padding: 20px; }
+.sidebar h2 { margin-bottom: 30px; color: #ffc107; }
+.sidebar ul { list-style: none; padding: 0; }
+.sidebar li { padding: 15px; cursor: pointer; border-bottom: 1px solid #444; }
+.sidebar li:hover, .sidebar li.active { background: #555; }
+
+.admin-content { flex: 1; padding: 30px; background: #f4f4f4; }
+.admin-table { width: 100%; border-collapse: collapse; background: white; margin-top: 20px; }
+.admin-table th, .admin-table td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+.admin-table th { background: #333; color: white; }
+
+.status-badge { padding: 5px 10px; border-radius: 15px; font-size: 0.8rem; color: white; }
+.status-pending { background: #ffc107; color: #333; }
+.status-confirmed { background: #17a2b8; }
+.status-shipping { background: #007bff; }
+.status-delivered { background: #28a745; }
+
+.form-group { margin-bottom: 15px; }
+.form-group input, .form-group textarea { width: 100%; padding: 10px; margin-top: 5px; }
+.btn-action { padding: 5px 10px; margin-right: 5px; cursor: pointer; }
+/* Container cho form thêm món */
+.add-product-container {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1); /* Đổ bóng nhẹ */
+    max-width: 600px; /* Giới hạn chiều rộng cho đỡ bị bè ra */
+    margin-top: 20px;
+}
+
+/* Từng nhóm ô nhập liệu */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+    font-size: 14px;
+}
+
+/* Style cho ô input */
+.input-admin {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background-color: #f9f9f9;
+}
+
+.input-admin:focus {
+    border-color: #ffc107; /* Màu vàng thương hiệu */
+    background-color: #fff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.2);
+}
+
+/* Riêng cho ô mô tả */
+textarea.input-admin {
+    min-height: 120px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Nút thêm món */
+.btn-submit {
+    background-color: #ffc107;
+    color: #222;
+    border: none;
+    padding: 14px;
+    width: 100%;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-submit:hover {
+    background-color: #e0a800;
+}
