@@ -1,18 +1,17 @@
 // Import Interface (để đảm bảo tuân thủ hợp đồng)
-import { ProductRepository } from "../../domain/repositories/ProductRepository.js";
+import ProductRepository from "../../domain/repositories/ProductRepository.js";
 import ProductModel from "../database/models/ProductModel.js";
 
 export class MongoProductRepository extends ProductRepository {
   
   async create(productData) {
-    const product = new ProductModel(productData);
-    return await product.save();
-  }
+        const newProduct = new ProductModel(productData);
+        return await newProduct.save();
+    }
 
-  async getAll() {
-    // Chỉ lấy những món đang bán (isAvailable: true) cho khách xem
-    return await ProductModel.find({ isAvailable: true });
-  }
+    async getAll() {
+        return await ProductModel.find().sort({ createdAt: -1 });
+    }
 
   // Dành cho Admin
   async getAllForAdmin() {

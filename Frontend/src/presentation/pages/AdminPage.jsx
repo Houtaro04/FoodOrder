@@ -1,21 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import '../../application/styles/Admin.css'; // Đảm bảo bạn có file css này
+import '../../application/styles/Admin.css'; 
 import { useAuth } from '../../application/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
 const AdminPage = () => {
     const [activeTab, setActiveTab] = useState('orders');
     const [orders, setOrders] = useState([]);
-    const [users, setUsers] = useState([]); // Thêm state users
-    const [products, setProducts] = useState({ name: '', price: '', image: '', description: '' });
+    const [users, setUsers] = useState([]);
     
+    // --- 1. KHAI BÁO STATE CHO FORM (Sửa lại cho chuẩn) ---
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+    const [image, setImage] = useState('');
+    const [description, setDescription] = useState('');
+    // Category mặc định là 'food' (không để mảng rỗng [])
+    const [category, setCategory] = useState('food'); 
+
     const { logout } = useAuth();
     const navigate = useNavigate();
 
-    // Hàm lấy Token từ LocalStorage
+    // Hàm lấy Token
     const getToken = () => localStorage.getItem('token');
 
-    // Hàm gọi API chung để đỡ phải viết lại Header nhiều lần
+    // Hàm gọi API có xác thực
     const authFetch = async (url, options = {}) => {
         const token = getToken();
         const res = await fetch(url, {
@@ -23,7 +30,7 @@ const AdminPage = () => {
             headers: {
                 ...options.headers,
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // <--- QUAN TRỌNG NHẤT: Gửi kèm Token
+                'Authorization': `Bearer ${token}` 
             }
         });
         if (res.status === 401 || res.status === 403) {
@@ -37,7 +44,7 @@ const AdminPage = () => {
 
     useEffect(() => {
         if (activeTab === 'orders') fetchOrders();
-        if (activeTab === 'users') fetchUsers(); // Gọi hàm lấy user
+        if (activeTab === 'users') fetchUsers(); 
     }, [activeTab]);
 
     const fetchOrders = async () => {
@@ -64,13 +71,32 @@ const AdminPage = () => {
         fetchOrders(); 
     };
 
+    // --- 2. SỬA HÀM THÊM MÓN ---
     const handleAddProduct = async (e) => {
         e.preventDefault();
+        
+        // Gom dữ liệu từ các state lẻ vào object
+        const newProduct = {
+            name: name,
+            price: parseFloat(price), // Chuyển chuỗi sang số
+            image: image,
+            description: description,
+            category: category
+        };
+
         const res = await authFetch('http://localhost:5000/api/admin/products', {
             method: 'POST',
-            body: JSON.stringify(products)
+            body: JSON.stringify(newProduct) // Gửi đúng biến newProduct
         });
-        if (res && res.ok) alert("Thêm món thành công!");
+
+        if (res && res.ok) {
+            alert("Thêm món thành công!");
+            // Reset form sau khi thêm (Tuỳ chọn)
+            setName('');
+            setPrice('');
+            setImage('');
+            setDescription('');
+        }
     };
 
     return (
@@ -78,9 +104,9 @@ const AdminPage = () => {
             <div className="sidebar">
                 <h2>Quản lý</h2>
                 <ul>
-                    <li onClick={() => setActiveTab('orders')}>Quản lý Đơn hàng</li>
-                    <li onClick={() => setActiveTab('products')}>Thêm Món ăn</li>
-                    <li onClick={() => setActiveTab('users')}>Người dùng</li>
+                    <li onClick={() => setActiveTab('orders')} className={activeTab === 'orders' ? 'active' : ''}>Quản lý Đơn hàng</li>
+                    <li onClick={() => setActiveTab('products')} className={activeTab === 'products' ? 'active' : ''}>Thêm Món ăn</li>
+                    <li onClick={() => setActiveTab('users')} className={activeTab === 'users' ? 'active' : ''}>Người dùng</li>
                 </ul>
             </div>
 
@@ -100,13 +126,14 @@ const AdminPage = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {/* Thêm kiểm tra Array.isArray để tránh lỗi .map is not a function */}
                                 {Array.isArray(orders) && orders.map(order => (
                                     <tr key={order._id}>
                                         <td>{order._id}</td>
                                         <td>{order.user?.fullName || 'Ẩn danh'}</td>
                                         <td>{order.totalPrice?.toLocaleString()} đ</td>
-                                        <td>{order.status}</td>
+                                        <td>
+                                            <span className={`status-badge ${order.status}`}>{order.status}</span>
+                                        </td>
                                         <td>
                                             {order.status === 'pending' && <button onClick={() => handleUpdateStatus(order._id, 'confirmed')}>Xác nhận</button>}
                                             {order.status === 'confirmed' && <button onClick={() => handleUpdateStatus(order._id, 'shipping')}>Giao hàng</button>}
@@ -119,7 +146,7 @@ const AdminPage = () => {
                     </div>
                 )}
 
-                {/* --- TAB SẢN PHẨM (GIAO DIỆN MỚI) --- */}
+                {/* --- TAB SẢN PHẨM (ĐÃ SỬA) --- */}
                 {activeTab === 'products' && (
                     <div>
                         <h3 style={{marginBottom: '20px', borderBottom: '2px solid #ffc107', display: 'inline-block', paddingBottom: '5px'}}>
@@ -135,12 +162,13 @@ const AdminPage = () => {
                                     <input 
                                         className="input-admin"
                                         placeholder="Ví dụ: Phở bò đặc biệt..." 
-                                        onChange={e => setProducts({...products, name: e.target.value})} 
+                                        value={name} // Gán giá trị
+                                        onChange={e => setName(e.target.value)} // Cập nhật đúng biến state lẻ
                                         required 
                                     />
                                 </div>
 
-                                {/* Giá và Link Ảnh (Nằm cùng 1 hàng) */}
+                                {/* Giá và Link Ảnh */}
                                 <div style={{display: 'flex', gap: '20px'}}>
                                     <div className="form-group" style={{flex: 1}}>
                                         <label>Giá tiền (VNĐ):</label>
@@ -148,7 +176,8 @@ const AdminPage = () => {
                                             className="input-admin"
                                             placeholder="50000" 
                                             type="number" 
-                                            onChange={e => setProducts({...products, price: e.target.value})} 
+                                            value={price}
+                                            onChange={e => setPrice(e.target.value)} // Cập nhật đúng biến
                                             required 
                                         />
                                     </div>
@@ -157,10 +186,28 @@ const AdminPage = () => {
                                         <input 
                                             className="input-admin"
                                             placeholder="https://..." 
-                                            onChange={e => setProducts({...products, image: e.target.value})} 
+                                            value={image}
+                                            onChange={e => setImage(e.target.value)} // Cập nhật đúng biến
                                             required 
                                         />
                                     </div>
+                                </div>
+
+                                {/* Danh mục món ăn */}
+                                <div className="form-group" style={{ marginBottom: '15px' }}>
+                                    <label style={{ fontWeight: 'bold', display: 'block', marginBottom: '5px' }}>
+                                        Danh mục món ăn:
+                                    </label>
+                                    <select 
+                                        value={category}
+                                        onChange={(e) => setCategory(e.target.value)}
+                                        style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc' }}
+                                    >
+                                        <option value="food">Đồ ăn</option>
+                                        <option value="drink">Đồ uống</option>
+                                        <option value="dessert">Tráng miệng</option>
+                                        <option value="other">Khác</option>
+                                    </select>
                                 </div>
 
                                 {/* Mô tả */}
@@ -169,7 +216,8 @@ const AdminPage = () => {
                                     <textarea 
                                         className="input-admin"
                                         placeholder="Mô tả thành phần, hương vị..." 
-                                        onChange={e => setProducts({...products, description: e.target.value})} 
+                                        value={description}
+                                        onChange={e => setDescription(e.target.value)} // Cập nhật đúng biến
                                     />
                                 </div>
 
@@ -183,7 +231,7 @@ const AdminPage = () => {
                     </div>
                 )}
 
-                {/* --- TAB USER (ĐÃ SỬA LỖI) --- */}
+                {/* --- TAB USER --- */}
                 {activeTab === 'users' && (
                     <div>
                         <h3>Danh sách Người dùng</h3>
@@ -193,7 +241,7 @@ const AdminPage = () => {
                                     <th>ID</th>
                                     <th>Họ và Tên</th>
                                     <th>Email</th>
-                                    <th>Quyền (Role)</th>
+                                    <th>Quyền</th>
                                     <th>SĐT</th>
                                     <th>Địa chỉ</th>
                                 </tr>
@@ -201,18 +249,12 @@ const AdminPage = () => {
                             <tbody>
                                 {users && users.length > 0 ? (
                                     users.map((user, index) => (
-                                        /* SỬA LỖI KEY: Dùng user._id, nếu không có thì dùng index tạm */
                                         <tr key={user._id || index}> 
-                                            
-                                            {/* SỬA LỖI CRASH: Kiểm tra ID tồn tại trước khi cắt chuỗi */}
                                             <td title={user._id || user.id}>
-                                                {/* Nếu có _id thì cắt, nếu không thì hiện "N/A" */}
                                                 {(user._id || user.id) ? (user._id || user.id).toString().slice(-6) : 'N/A'}
                                             </td> 
-                                            
                                             <td style={{fontWeight: 'bold'}}>{user.fullName || 'Không tên'}</td>
                                             <td>{user.email}</td>
-                                            
                                             <td>
                                                 <span style={{
                                                     color: user.role === 'admin' ? 'red' : 'green',
@@ -222,14 +264,12 @@ const AdminPage = () => {
                                                     {user.role}
                                                 </span>
                                             </td>
-                                            
                                             <td>{user.phone || '---'}</td>
                                             <td>{user.address || '---'}</td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        {/* SỬA LỖI COLSPAN: Phải viết hoa chữ S (colSpan) */}
                                         <td colSpan="6" style={{textAlign: "center", padding: "20px"}}>
                                             Chưa có người dùng nào
                                         </td>

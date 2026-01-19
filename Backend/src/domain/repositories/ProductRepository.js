@@ -1,12 +1,12 @@
-export class ProductRepository {
-    // Định nghĩa các hành động bắt buộc phải có
+// src/domain/repositories/ProductRepository.js
+
+export default class ProductRepository {
+    // Chỉ định nghĩa tên hàm, không viết code xử lý
     create(product) {
-        throw new Error("Method 'create' not implemented");
+        throw new Error("Method not implemented");
     }
+
     getAll() {
-        throw new Error("Method 'getAll' not implemented");
-    }
-    findById(id) {
-        throw new Error("Method 'findById' not implemented");
+        throw new Error("Method not implemented");
     }
 }

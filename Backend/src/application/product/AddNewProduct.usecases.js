@@ -1,4 +1,4 @@
-export class AddNewProductUsecase {
+export default class AddNewProductUsecase {
     constructor(productRepository) {
         this.productRepository = productRepository;
     }

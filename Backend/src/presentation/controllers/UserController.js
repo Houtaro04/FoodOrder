@@ -10,19 +10,19 @@ export class UserController {
   register = async (req, res) => {
     try {
         // 1. Lấy dữ liệu tên kiểu Frontend gửi lên
-        const { name, email, password } = req.body;
+        const { fullName, email, password } = req.body;
 
         console.log("Debug Frontend gửi:", req.body); // Check log xem nhận được chưa
 
         // 2. Map (Chuyển đổi) sang tên biến mà User.js (Entity) cần
         const userData = {
-            fullName: name,           // Frontend gửi 'name' -> Backend lưu vào 'fullName'
-            username: email.split('@')[0], // Tự tạo username từ phần đầu email
+            fullName: fullName,
+            username: email.split('@')[0],
             password: password,
-            email: email,              // Frontend gửi 'email' -> Backend lưu vào 'mail'
-            role: 'customer',             // Mặc định là user thường
-            phone: '',                // Để trống nếu frontend chưa gửi
-            address: ''               // Để trống nếu frontend chưa gửi
+            email: email,
+            role: 'customer',
+            phone: '',
+            address: ''
         };
 
         // 3. Gọi UseCase thực thi (truyền userData đã chuẩn hóa vào)

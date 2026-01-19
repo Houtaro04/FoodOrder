@@ -12,8 +12,8 @@ const ProductCard = ({ product }) => {
         style={{ width: '100%', height: '150px', objectFit: 'cover' }} 
       />
       <h3>{product.name}</h3>
-      <p style={{ color: 'green', fontWeight: 'bold' }}>
-        {product.price.toLocaleString()} VNĐ
+      <p className="price">
+          {product.price ? product.price.toLocaleString() : 0} VNĐ
       </p>
       <button 
         onClick={() => addToCart(product)}

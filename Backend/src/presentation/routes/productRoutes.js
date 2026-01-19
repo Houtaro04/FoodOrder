@@ -1,10 +1,16 @@
-// src/presentation/routes/productRoutes.js
 import express from 'express';
-import productController from '../controllers/ProductController.js';
+import ProductController from '../controllers/ProductController.js';
+import { MongoProductRepository } from '../../infrastructure/repositories/MongoProductRepository.js';
+import GetAllProductUseCase from '../../application/product/GetAllProduct.usecases.js'; 
+
 const router = express.Router();
 
-// Định nghĩa GET / (Tương ứng với /api/products bên server.js)
-router.get('/', productController.getAllProducts); 
-// (Chú ý: tên hàm getAllProducts phải khớp với tên trong Controller)
+// --- PHẦN WIRING (LẮP RÁP) ---
+const productRepository = new MongoProductRepository();
+const getAllProductUseCase = new GetAllProductUseCase(productRepository);
+const productController = new ProductController(null, getAllProductUseCase);
+
+// --- ROUTES ---
+router.get('/', productController.getAllProducts);
 
 export default router;
